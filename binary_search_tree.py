@@ -112,3 +112,12 @@ class BinarySearchTree:
                 current_node = current_node.left
                 
         return # Node not found
+    
+    def inorder_traversal(self, node):
+        pass
+
+    def preorder_traversal(self, node):
+        pass
+
+    def postorder_traversal(self, node):
+        pass
