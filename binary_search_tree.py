@@ -71,7 +71,7 @@ class BinarySearchTree:
         
             # Check if current_node has a matching key.
             if current_node.key == key: 
-                if current_node.left is None and current_node.right is None:   # Case 1
+                if current_node.left is None and current_node.right is None:   # Case 1: node is a leaf
                     if parent is None: # Node is root
                         self.root = None
                     elif parent.left is current_node: 
@@ -79,7 +79,7 @@ class BinarySearchTree:
                     else:
                         parent.right = None
                     return  # Node found and removed
-                elif current_node.left is not None and current_node.right is None:  # Case 2
+                elif current_node.left is not None and current_node.right is None:  # Case 2: node has one child
                     if parent is None: # Node is root
                         self.root = current_node.left
                     elif parent.left is current_node: 
@@ -95,29 +95,53 @@ class BinarySearchTree:
                     else:
                         parent.right = current_node.right
                     return  # Node found and removed
-                else:                                    # Case 3
+                else: # Case 3: node has two children
                     # Find successor (leftmost child of right subtree)
-                    successor = current_node.right
-                    while successor.left is not None:
-                        successor = successor.left
-                    current_node.key = successor.key      # Copy successor to current node
-                    parent = current_node
-                    current_node = current_node.right     # Remove successor from right subtree
-                    key = parent.key                      # Loop continues with new key
-            elif current_node.key < key: # Search right
-                parent = current_node
+                    successor_parent = current_node # establish current node as parent of the successor
+                    successor = current_node.right # move to right child
+                    while successor.left is not None: # check for left child
+                        successor_parent = successor # move parent pointer down
+                        successor = successor.left # move to left child
+                    current_node.key = successor.key # Copy successor to current node
+                    current_node.value = successor.value # copy value as well
+                    if successor_parent.left is successor: # Remove successor from right subtree
+                        successor_parent.left = successor.right
+                    else:
+                        successor_parent.right = successor.right
+                    return # node deleted
+            parent = current_node # continue searching
+            if current_node.key < key: # Search right
                 current_node = current_node.right
-            else:                        # Search left
-                parent = current_node
+            else: # Search left
                 current_node = current_node.left
-                
         return # Node not found
     
-    def inorder_traversal(self, node):
-        pass
+    def inorder_traversal(self, node, result = None): # returns in-order traversal, traverse the left subtree, then the root node, finally traverse the right subtree.
+        if result is None:
+            result = []
+        if node is None:
+            return result
+        self.inorder_traversal(node.left, result)
+        result.append((node.key, node.value)) # appending a tuple
+        self.inorder_traversal(node.right, result)
+        return result
 
-    def preorder_traversal(self, node):
-        pass
+    def preorder_traversal(self, node, result = None): # returns pre-order traversal, start at root, traverse left subtree, then traverse right subtree.
+        if result is None:
+            result = []
+        if node is None:
+            return result
+        result.append((node.key, node.value))
+        self.preorder_traversal(node.left, result)
+        self.preorder_traversal(node.right, result)
+        return result
 
-    def postorder_traversal(self, node):
-        pass
+    def postorder_traversal(self, node, result = None): # returns post-order traversal, traverse left subtree, traverse right subtree, then root.
+        if result is None:
+            result = []
+        if node is None:
+            return result
+        self.postorder_traversal(node.left, result)
+        self.postorder_traversal(node.right, result)
+        result.append((node.key, node.value))
+        return result
