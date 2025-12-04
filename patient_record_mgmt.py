@@ -1,5 +1,8 @@
+# Drew Pickett Data Structures
+
 from binary_search_tree import BinarySearchTree, Node
 import csv
+import graphviz
 
 class PatientRecord:
 
@@ -37,10 +40,31 @@ class PatientRecordManagementSystem:
             print(record) # calls PatientRecord __str__()
 
     def build_tree_from_csv(self, file_path):
-        pass
+        with open(file_path, newline = '') as csvfile: # opens csv file 
+            fileScan = csv.DictReader(csvfile) # set a reader
+            for row in fileScan:
+                patient_id = int(row['PatientID'])
+                name = row['Name']
+                age = int(row['Age'])
+                diagnosis = row['Diagnosis']
+                blood_pressure = row['BloodPressure']
+                pulse = row['Pulse']
+                body_temperature = row['BodyTemperature']
+                record = PatientRecord(patient_id, name, age, diagnosis, blood_pressure, pulse, body_temperature)
+                node = Node(patient_id, record)
+                self.bst.insert(node)
 
     def visualize_tree(self):
-        pass
+        dot = graphviz.Digraph()
+        self._add_nodes(dot, self.bst.root)
+        return dot
 
     def _add_nodes(self, dot, node):
-        pass
+        if node:
+            dot.node(str(node.key), f"{node.key}: {node.value.name}")
+            if node.left:
+                dot.edge(str(node.key), str(node.left.key))
+                self._add_nodes(dot, node.left)
+            if node.right:
+                dot.edge(str(node.key), str(node.right.key))
+                self._add_nodes(dot, node.right)
